@@ -1,4 +1,14 @@
-# my-discord-bom
+# My Discord Bot
+
+Commands:
+- `!ping`
+- `!hello`
+
+Railway:
+1. Add environment variable `TOKEN`
+2. Put your Discord bot token as the value
+3. Start command: `python main.py`
+
 import os
 import discord
 from discord.ext import commands
@@ -30,14 +40,4 @@ discord.py>=2.6,<3
 __pycache__/
 *.pyc
 .env
-# My Discord Bot
 
-Commands:
-- `!ping`
-- `!hello`
-
-Railway:
-1. Add environment variable `TOKEN`
-2. Put your Discord bot token as the value
-3. Start command: `python main.py`
-4. 
