@@ -3,7 +3,9 @@ import asyncio
 import discord
 from discord.ext import commands
 
-# Updated main.py configuration for Discord Bot
+# আপনার সার্ভার আইডি সেট করা হলো
+GUILD_ID = 1542804342007136306
+
 class SecurityBot(commands.AutoShardedBot):
     def __init__(self):
         intents = discord.Intents.all()
@@ -14,6 +16,7 @@ class SecurityBot(commands.AutoShardedBot):
         )
 
     async def setup_hook(self):
+        # cogs ফোল্ডার থেকে সব কমান্ড ফাইল লোড করা
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 try:
@@ -22,9 +25,12 @@ class SecurityBot(commands.AutoShardedBot):
                 except Exception as e:
                     print(f"[ERROR LOADING COG] {filename}: {e}")
         
+        # আপনার সার্ভারে ইনস্ট্যান্ট স্লাশ কমান্ড সিঙ্ক করার কোড
+        guild = discord.Object(id=GUILD_ID)
         try:
-            synced = await self.tree.sync()
-            print(f"[SYNCED] Successfully synced {len(synced)} slash command(s).")
+            self.tree.copy_global_to(guild=guild)
+            synced = await self.tree.sync(guild=guild)
+            print(f"[INSTANT SYNC] {len(synced)} slash commands synced instantly to Guild ID: {GUILD_ID}")
         except Exception as e:
             print(f"[ERROR SYNCING] {e}")
 
