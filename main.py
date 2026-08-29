@@ -13,27 +13,33 @@ class SecurityBot(commands.AutoShardedBot):
         )
 
     async def setup_hook(self):
-        # cogs ফোল্ডারের ফাইলগুলো অটো-লোড করবে
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
-                await self.load_extension(f'cogs.{filename[:-3]}')
-                print(f"[LOADED COG] {filename}")
+                try:
+                    await self.load_extension(f'cogs.{filename[:-3]}')
+                    print(f"[LOADED COG] {filename}")
+                except Exception as e:
+                    print(f"[ERROR LOADING COG] {filename}: {e}")
         
-        # স্লাশ কমান্ড ডিসকর্ডে সিঙ্ক করার জন্য
         try:
             synced = await self.tree.sync()
             print(f"[SYNCED] Successfully synced {len(synced)} slash command(s).")
         except Exception as e:
-            print(f"[ERROR] Failed to sync slash commands: {e}")
+            print(f"[ERROR SYNCING] {e}")
 
     async def on_ready(self):
         print(f"[ONLINE] Logged in as {self.user} (ID: {self.user.id})")
-        print(f"[SHARDS] Active Shard Count: {self.shard_count}")
 
 bot = SecurityBot()
 
 token = os.getenv("DISCORD_TOKEN")
 if token:
-    bot.run(token)
+    token = token.strip().strip('"').strip("'")
+    try:
+        bot.run(token)
+    except discord.errors.LoginFailure:
+        print("[CRITICAL ERROR] Invalid Discord Bot Token provided!")
+    except Exception as e:
+        print(f"[CRITICAL ERROR] Failed to run bot: {e}")
 else:
-    print("[ERROR] DISCORD_TOKEN is missing!")
+    print("[ERROR] DISCORD_TOKEN environment variable is missing!")
