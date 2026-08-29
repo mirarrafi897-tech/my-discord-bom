@@ -3,6 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
+# Updated main.py configuration for Discord Bot
 class SecurityBot(commands.AutoShardedBot):
     def __init__(self):
         intents = discord.Intents.all()
