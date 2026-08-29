@@ -1,12 +1,8 @@
 import os
-import asyncio
 import discord
 from discord.ext import commands
 
-# আপনার সার্ভার আইডি সেট করা হলো
-GUILD_ID = 1542804342007136306
-
-class SecurityBot(commands.AutoShardedBot):
+class SecurityBot(commands.Bot):
     def __init__(self):
         intents = discord.Intents.all()
         super().__init__(
@@ -16,23 +12,21 @@ class SecurityBot(commands.AutoShardedBot):
         )
 
     async def setup_hook(self):
-        # cogs ফোল্ডার থেকে সব কমান্ড ফাইল লোড করা
+        # Cogs লোড করা
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 try:
                     await self.load_extension(f'cogs.{filename[:-3]}')
                     print(f"[LOADED COG] {filename}")
                 except Exception as e:
-                    print(f"[ERROR LOADING COG] {filename}: {e}")
-        
-        # আপনার সার্ভারে ইনস্ট্যান্ট স্লাশ কমান্ড সিঙ্ক করার কোড
-        guild = discord.Object(id=GUILD_ID)
+                    print(f"[ERROR COG] {filename}: {e}")
+
+        # গ্লোবাল স্লাশ কমান্ড সিঙ্ক (Public Bot-এর জন্য)
         try:
-            self.tree.copy_global_to(guild=guild)
-            synced = await self.tree.sync(guild=guild)
-            print(f"[INSTANT SYNC] {len(synced)} slash commands synced instantly to Guild ID: {GUILD_ID}")
+            synced = await self.tree.sync()
+            print(f"[GLOBAL SYNC SUCCESS] {len(synced)} slash commands synced globally!")
         except Exception as e:
-            print(f"[ERROR SYNCING] {e}")
+            print(f"[SYNC ERROR] {e}")
 
     async def on_ready(self):
         print(f"[ONLINE] Logged in as {self.user} (ID: {self.user.id})")
@@ -41,12 +35,6 @@ bot = SecurityBot()
 
 token = os.getenv("DISCORD_TOKEN")
 if token:
-    token = token.strip().strip('"').strip("'")
-    try:
-        bot.run(token)
-    except discord.errors.LoginFailure:
-        print("[CRITICAL ERROR] Invalid Discord Bot Token provided!")
-    except Exception as e:
-        print(f"[CRITICAL ERROR] Failed to run bot: {e}")
+    bot.run(token.strip().strip('"').strip("'"))
 else:
-    print("[ERROR] DISCORD_TOKEN environment variable is missing!")
+    print("[ERROR] DISCORD_TOKEN is missing!")
